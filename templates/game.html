@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Map - Aero Map & Shop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+</head>
+
+<body>
+    <div class="hud">
+        <div class="hud-info">
+            <span>Passenger: <span style="color: white; font-weight: normal;">{{ name }}</span></span>
+            <span>Flight: <span id="flight-display" style="color: white; font-weight: normal;">{{ flight
+                    }}</span></span>
+            <span>Seat: <span id="seat-display" style="color: white; font-weight: normal;">{{ seat }}</span></span>
+        </div>
+        <div class="hud-actions">
+            <span style="color: white; font-weight: 600;">Cart: <span id="cart-count"
+                    style="color: var(--accent-color);">0</span> items</span>
+            <button id="nav-btn" class="btn btn-nav" style="padding: 8px 16px; font-size: 0.9rem;">🧭 Navigate</button>
+            <button id="checkout-btn" class="btn" style="padding: 8px 16px; font-size: 0.9rem;">Checkout</button>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <!-- Phaser injects canvas here -->
+    </div>
+
+    <!-- Shop Modal Overlay -->
+    <div id="shop-modal" class="shop-modal">
+        <div class="shop-header">
+            <h2 id="shop-title" class="shop-title">Store Name</h2>
+            <button id="close-shop-btn" class="close-btn">&times;</button>
+        </div>
+        <ul id="product-list" class="product-list">
+            <!-- Products injected by game.js -->
+        </ul>
+        <div
+            style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 15px; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--accent-color); font-weight: bold;">Cart Total: £<span
+                    id="modal-cart-total">0.00</span></span>
+        </div>
+    </div>
+
+    <!-- Navigation Modal Overlay -->
+    <div id="nav-modal" class="shop-modal nav-modal">
+        <div class="shop-header">
+            <h2 class="shop-title">🧭 Navigate To...</h2>
+            <button id="close-nav-btn" class="close-btn">&times;</button>
+        </div>
+        <ul id="nav-list" class="product-list nav-list">
+            <!-- Destinations injected by game.js -->
+        </ul>
+    </div>
+
+    <script>
+        window.userFlight = "{{ flight }}";
+        window.userSeat = "{{ seat }}";
+    </script>
+    <script src="{{ url_for('static', filename='game.js') }}"></script>
+</body>
+
+</html>

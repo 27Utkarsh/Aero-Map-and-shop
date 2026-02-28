@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - Aero Map & Shop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎉 Order Confirmed!</h1>
+
+        {% if order %}
+        <div class="order-success">
+            <p>Thank you, <strong>{{ order.passenger_name }}</strong>!</p>
+            <p>Your order is being prepared and will be delivered directly to
+                <strong style="color: var(--accent-color); font-size: 1.2rem;">Seat {{ order.seat }}</strong>
+                on flight <strong>{{ order.flight }}</strong> before boarding.
+            </p>
+
+            <div class="order-items">
+                <h3 style="margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px;">Order
+                    Summary</h3>
+                {% for item in order.items %}
+                <div class="order-item-row">
+                    <span>{{ item.name }}</span>
+                    <span>£{{ "%.2f"|format(item.price) }}</span>
+                </div>
+                {% endfor %}
+                <div class="total-row">
+                    <span>Total</span>
+                    <span>£{{ "%.2f"|format(order.total) }}</span>
+                </div>
+            </div>
+
+            <a href="/game" class="btn" style="margin-top: 20px;">Return to Terminal</a>
+        </div>
+        {% else %}
+        <p>No recent orders found.</p>
+        <a href="/game" class="btn">Return to Terminal</a>
+        {% endif %}
+    </div>
+</body>
+
+</html>

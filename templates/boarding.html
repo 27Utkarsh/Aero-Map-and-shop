@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Boarding Pass - Aero Map & Shop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Welcome, {{ user.userinfo.name if user.userinfo else 'Passenger' }}!</h1>
+        <p>Please enter your boarding pass details to enter the terminal and enable seat delivery.</p>
+
+        <form action="/boarding" method="POST" style="margin-top: 30px;">
+            <div class="form-group">
+                <label for="name">Passenger Name</label>
+                <input type="text" id="name" name="name" value="{{ user.userinfo.name if user.userinfo else '' }}"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label for="flight">Flight Number</label>
+                <input type="text" id="flight" name="flight" placeholder="e.g. BA123" required>
+            </div>
+
+            <div class="form-group">
+                <label for="seat">Seat Number</label>
+                <input type="text" id="seat" name="seat" placeholder="e.g. 14A" required>
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">
+                Enter Terminal
+            </button>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,344 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+:root {
+  --bg-color: #0a0e27;
+  --accent-color: #f39c12;
+  --accent-hover: #d68910;
+  --text-dark: #1a1a1a;
+  --text-light: #ffffff;
+  --panel-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism containers */
+.container {
+  background: var(--panel-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 40px;
+  margin: 50px auto;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+h1 {
+  font-weight: 800;
+  margin-top: 0;
+  color: var(--accent-color);
+}
+
+p {
+  line-height: 1.5;
+  color: #ccc;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-light);
+  font-size: 1rem;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  border-color: var(--accent-color);
+}
+
+/* Buttons */
+.btn {
+  background-color: var(--accent-color);
+  color: var(--text-dark);
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+}
+
+/* Game HUD */
+.hud {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  border-bottom: 2px solid var(--accent-color);
+}
+
+.hud-info span {
+  margin-right: 20px;
+  font-weight: 600;
+  color: var(--accent-color);
+}
+
+.hud-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Game Canvas styling */
+#game-container {
+  margin-top: 20px;
+  border: 2px solid var(--accent-color);
+  box-shadow: 0 0 20px rgba(243, 156, 18, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Shop Modal Overlay */
+.shop-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(10, 14, 39, 0.95);
+  border: 2px solid var(--accent-color);
+  border-radius: 12px;
+  padding: 30px;
+  width: 80%;
+  max-width: 400px;
+  display: none;
+  /* hidden by default */
+  flex-direction: column;
+  z-index: 10;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.shop-modal.active {
+  display: flex;
+}
+
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.shop-title {
+  color: var(--accent-color);
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.close-btn {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.product-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.product-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  font-weight: 600;
+}
+
+.product-price {
+  color: var(--accent-color);
+  font-size: 0.9rem;
+}
+
+.add-to-cart {
+  background: var(--panel-bg);
+  border: 1px solid var(--glass-border);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-to-cart:hover {
+  background: var(--accent-color);
+  color: var(--text-dark);
+}
+
+/* Notifications */
+.notification {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-color);
+  color: var(--text-dark);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  animation: slideDown 0.3s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
+  z-index: 20;
+}
+
+@keyframes slideDown {
+  from {
+    top: -50px;
+    opacity: 0;
+  }
+
+  to {
+    top: 20px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Order Success UI */
+.order-success {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.order-items {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.order-item-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--glass-border);
+  font-weight: 800;
+  color: var(--accent-color);
+  font-size: 1.2rem;
+}
+
+/* Navigation Modal */
+.nav-modal {
+  max-height: 70vh;
+}
+
+.nav-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+  font-weight: 600;
+}
+
+.nav-item:hover {
+  background: rgba(243, 156, 18, 0.15);
+}
+
+.nav-type {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #888;
+  letter-spacing: 0.05em;
+}
+
+.btn-nav {
+  background: transparent;
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-nav:hover {
+  background: var(--accent-color);
+  color: var(--text-dark);
+}
+
+/* Fixed position modals so they work outside game-container */
+.shop-modal,
+.nav-modal {
+  position: fixed;
+}
