@@ -1,0 +1,35 @@
+# ── Secrets ──────────────────────────────────────────────────────────────────
+# Never commit real credentials to version control.
+# Copy .env.example → .env and fill in your own values.
+.env
+
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+pip-wheel-metadata/
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+venv/
+env/
+.venv/
+.env.local
+
+# ── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDEs ─────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
