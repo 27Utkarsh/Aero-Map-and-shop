@@ -10,30 +10,34 @@
 
 <body>
     <div class="container">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Aero Map & Shop"
+            style="width: 120px; border-radius: 12px; margin-bottom: 15px;">
         <h1>Welcome, {{ user.userinfo.name if user.userinfo else 'Passenger' }}!</h1>
-        <p>Please enter your boarding pass details to enter the terminal and enable seat delivery.</p>
+        <p>Enter your PNR (booking reference) to load your boarding pass and enter the terminal.</p>
+
+        {% if error %}
+        <div
+            style="background: rgba(208, 60, 56, 0.2); border: 1px solid #d03c38; padding: 12px; border-radius: 8px; margin-bottom: 20px; color: #ff685b;">
+            {{ error }}
+        </div>
+        {% endif %}
 
         <form action="/boarding" method="POST" style="margin-top: 30px;">
             <div class="form-group">
-                <label for="name">Passenger Name</label>
-                <input type="text" id="name" name="name" value="{{ user.userinfo.name if user.userinfo else '' }}"
-                    required>
-            </div>
-
-            <div class="form-group">
-                <label for="flight">Flight Number</label>
-                <input type="text" id="flight" name="flight" placeholder="e.g. BA123" required>
-            </div>
-
-            <div class="form-group">
-                <label for="seat">Seat Number</label>
-                <input type="text" id="seat" name="seat" placeholder="e.g. 14A" required>
+                <label for="pnr">PNR / Booking Reference</label>
+                <input type="text" id="pnr" name="pnr" placeholder="e.g. LG3KZP"
+                    style="text-transform: uppercase; letter-spacing: 3px; font-size: 1.3rem; text-align: center;"
+                    maxlength="6" required>
             </div>
 
             <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">
-                Enter Terminal
+                Load Boarding Pass
             </button>
         </form>
+
+        <p style="margin-top: 30px; font-size: 0.8rem; color: #666;">
+            Demo PNRs: LG3KZP, QZ8P9C, H7L4TN, R2M7FX, C9V3JD
+        </p>
     </div>
 </body>
 

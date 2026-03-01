@@ -30,6 +30,14 @@ oauth.register(
     server_metadata_url=f"https://{AUTH0_DOMAIN}/.well-known/openid-configuration",
 )
 
+# Load ticket data from JSON
+TICKETS_PATH = os.path.join(os.path.dirname(__file__), "Assets", "Tickets.json")
+with open(TICKETS_PATH, "r", encoding="utf-8") as f:
+    TICKETS = json.load(f)
+
+# Build a lookup dict by PNR (case-insensitive)
+TICKET_BY_PNR = {t["pnr"].upper(): t for t in TICKETS}
+
 # In-memory "database" for MVP
 mock_orders = []
 
@@ -48,7 +56,7 @@ def requires_boarding_pass(f):
     def decorated(*args, **kwargs):
         if "user" not in session:
             return redirect("/login")
-        if "flight" not in session or "seat" not in session:
+        if "ticket" not in session:
             return redirect("/boarding")
         return f(*args, **kwargs)
     return decorated
@@ -58,7 +66,7 @@ def requires_boarding_pass(f):
 @app.route("/")
 def home():
     if "user" in session:
-        if "flight" in session and "seat" in session:
+        if "ticket" in session:
             return redirect("/game")
         return redirect("/boarding")
     return render_template("index.html")
@@ -93,22 +101,25 @@ def logout():
 @app.route("/boarding", methods=["GET", "POST"])
 @requires_auth
 def boarding():
+    error = None
     if request.method == "POST":
-        session["passenger_name"] = request.form.get("name")
-        session["flight"] = request.form.get("flight")
-        session["seat"] = request.form.get("seat")
-        return redirect("/game")
-    return render_template("boarding.html", user=session["user"])
+        pnr = request.form.get("pnr", "").strip().upper()
+        ticket = TICKET_BY_PNR.get(pnr)
+        if ticket:
+            session["ticket"] = ticket
+            return redirect("/game")
+        else:
+            error = f"No booking found for PNR: {pnr}. Please check and try again."
+    return render_template("boarding.html", user=session["user"], error=error)
 
 @app.route("/game")
 @requires_boarding_pass
 def game():
+    ticket = session["ticket"]
     return render_template(
         "game.html",
         user=session["user"],
-        name=session.get("passenger_name"),
-        flight=session.get("flight"),
-        seat=session.get("seat")
+        ticket=ticket
     )
 
 @app.route("/api/order", methods=["POST"])
@@ -117,13 +128,15 @@ def create_order():
     data = request.json
     cart = data.get("cart", [])
     total = sum(item.get("price", 0) for item in cart)
+    ticket = session["ticket"]
 
     order = {
         "user_email": session["user"].get("userinfo", {}).get("email", "unknown"),
-        "passenger_name": session.get("passenger_name"),
-        "flight": session.get("flight"),
-        "seat": session.get("seat"),
-        "items": cart,
+        "passenger_name": ticket.get("passenger_name"),
+        "flight": ticket.get("flight_number"),
+        "seat": ticket.get("seat"),
+        "gate": ticket.get("gate"),
+        "cart_items": cart,
         "total": total
     }
     mock_orders.append(order)

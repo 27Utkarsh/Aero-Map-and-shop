@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aero Map & Shop</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
     <div class="container">
-        <h1>✈️ Aero Map & Shop</h1>
-        <p>Your pre-flight adventure awaits! Walk around the virtual terminal, grab some snacks, and have them delivered directly to your seat before boarding.</p>
-        
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Aero Map & Shop"
+            style="width: 180px; border-radius: 16px; margin-bottom: 20px;">
+        <h1>Aero Map & Shop</h1>
+        <p>Your pre-flight adventure awaits! Walk around the virtual terminal, grab some snacks, and have them delivered
+            directly to your seat before boarding.</p>
+
         <div style="margin-top: 40px;">
             <a href="/login" class="btn">Login with Boarding Pass</a>
         </div>
     </div>
 </body>
+
 </html>
