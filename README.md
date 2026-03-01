@@ -2,13 +2,15 @@
 
 > **HackSussex 2026** — Pre-flight airport shopping, gamified.
 
+The main idea for this app was that it will be full mobile game made using unity which will allow passengers to do shopping around the airport through their virtual persona while they wait for boarding at the gate, the checkout process closes 15 minutes before boarding .
+
 Aero Map & Shop lets airport passengers walk a **3D virtual terminal** on their phone or laptop, browse real gate-area shops, add items to a cart, and have them delivered to their seat before boarding — all without leaving the gate.
 
 ---
 
 ## 🎮 What It Is
 
-A browser-based mini-RPG set inside an airport terminal. After logging in with your boarding pass, you control a blocky 3D character roaming the concourse. Walk into a store, pick your items, and checkout. Your order is queued for seat delivery.
+A browser-based mini-RPG set inside an airport terminal. After logging in with your boarding pass (I've got a list of boarding passes as a json file that can be used), you control a blocky 3D character roaming the map. Walk into a store, pick your items, and checkout. Your order is queued for seat delivery. Players can also use navigation feature to find their way to a store, gate, washrooms or any other landmark.
 
 ---
 
@@ -152,4 +154,4 @@ Aero Map and shop/
 
 ---
 
-*Built for HackSussex 2026 in ~19 hours.*
+*Built for HackSussex 2026 .*
