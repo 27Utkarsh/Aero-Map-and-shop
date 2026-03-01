@@ -66,6 +66,17 @@ const zonePrompt = document.getElementById("zone-prompt");
 const paymentModal = document.getElementById("payment-modal");
 const closePaymentBtn = document.getElementById("close-payment-btn");
 const paymentTotalElem = document.getElementById("payment-total");
+const joystickZone = document.getElementById("joystick-zone");
+const joystickThumb = document.getElementById("joystick-thumb");
+
+// ==========================================
+// MOBILE JOYSTICK STATE
+// ==========================================
+const JOYSTICK_MAX_RADIUS = 35; // max px the thumb travels from centre
+let joystickActive = false;
+let joystickDirX = 0; // -1 (left)  →  +1 (right)
+let joystickDirY = 0; // -1 (up)    →  +1 (down)
+let joystickOriginX = 0, joystickOriginY = 0;
 
 // ==========================================
 // BOARDING COUNTDOWN TIMER
@@ -123,24 +134,90 @@ function anyModalOpen() {
 // ==========================================
 closeShopBtn.addEventListener("click", () => { shopModal.classList.remove("active"); activeStore = null; });
 
+// Checkout directly from the shop modal
+document.getElementById("shop-checkout-btn").addEventListener("click", () => {
+    shopModal.classList.remove("active");
+    activeStore = null;
+    doCheckout();
+});
+
+// How many of this item are in the global cart?
+function getItemQty(name) {
+    return cart.filter(i => i.name === name).length;
+}
+
+// Remove one instance of an item by name (most recently added)
+function removeOneFromCart(name) {
+    for (let i = cart.length - 1; i >= 0; i--) {
+        if (cart[i].name === name) {
+            cart.splice(i, 1);
+            updateCartUI();
+            showNotification(`Removed ${name}`);
+            return;
+        }
+    }
+}
+
+// Build/rebuild the product list inside the shop modal.
+// Shows −qty+ controls when qty > 0, plain '+ Add' otherwise.
+function renderShopItems(storeName) {
+    if (!storeName || !stores[storeName]) return;
+    productList.innerHTML = "";
+
+    stores[storeName].forEach(item => {
+        const qty = getItemQty(item.name);
+        const li = document.createElement("li");
+        li.className = "product-item";
+
+        const info = document.createElement("div");
+        info.className = "product-info";
+        info.innerHTML = `<span class="product-name">${item.name}</span><span class="product-price">£${item.price.toFixed(2)}</span>`;
+        li.appendChild(info);
+
+        const controls = document.createElement("div");
+        controls.className = "qty-controls";
+
+        if (qty > 0) {
+            const minusBtn = document.createElement("button");
+            minusBtn.className = "qty-btn";
+            minusBtn.textContent = "\u2212"; // − minus sign
+            minusBtn.onclick = () => removeOneFromCart(item.name);
+
+            const qtyDisplay = document.createElement("span");
+            qtyDisplay.className = "qty-display";
+            qtyDisplay.textContent = qty;
+
+            const plusBtn = document.createElement("button");
+            plusBtn.className = "qty-btn";
+            plusBtn.textContent = "+";
+            plusBtn.onclick = () => addToCart(item.name, item.price);
+
+            controls.appendChild(minusBtn);
+            controls.appendChild(qtyDisplay);
+            controls.appendChild(plusBtn);
+        } else {
+            const addBtn = document.createElement("button");
+            addBtn.className = "add-to-cart";
+            addBtn.textContent = "+ Add";
+            addBtn.onclick = () => addToCart(item.name, item.price);
+            controls.appendChild(addBtn);
+        }
+
+        li.appendChild(controls);
+        productList.appendChild(li);
+    });
+
+    // Show/hide the in-store checkout button based on cart state
+    const shopCheckoutBtn = document.getElementById("shop-checkout-btn");
+    if (shopCheckoutBtn) shopCheckoutBtn.style.display = cart.length > 0 ? "inline-flex" : "none";
+}
+
 function openShop(storeName) {
     if (activeStore === storeName) return;
     closeAllModals();
     activeStore = storeName;
     shopTitle.textContent = storeName;
-    productList.innerHTML = "";
-
-    stores[storeName].forEach(item => {
-        const li = document.createElement("li");
-        li.className = "product-item";
-        li.innerHTML = `<div class="product-info"><span class="product-name">${item.name}</span><span class="product-price">£${item.price.toFixed(2)}</span></div>`;
-        const addBtn = document.createElement("button");
-        addBtn.className = "add-to-cart";
-        addBtn.textContent = "+ Add";
-        addBtn.onclick = () => addToCart(item.name, item.price);
-        li.appendChild(addBtn);
-        productList.appendChild(li);
-    });
+    renderShopItems(storeName);
     shopModal.classList.add("active");
 }
 
@@ -155,6 +232,8 @@ function updateCartUI() {
     const t = cart.reduce((s, i) => s + i.price, 0);
     modalCartTotal.textContent = t.toFixed(2);
     cartModalTotal.textContent = t.toFixed(2);
+    // Keep shop item quantities in sync while the shop modal is open
+    if (activeStore) renderShopItems(activeStore);
 }
 
 // ==========================================
@@ -197,6 +276,9 @@ function doCheckout() {
 // PAYMENT MODAL
 // ==========================================
 closePaymentBtn.addEventListener("click", () => { paymentModal.classList.remove("active"); });
+
+// Tapping the dark backdrop (the dimmed area above the modal) closes everything
+document.getElementById("modal-backdrop").addEventListener("click", closeAllModals);
 
 document.querySelectorAll(".payment-option").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -253,6 +335,11 @@ document.addEventListener("keydown", (e) => {
         if (currentZoneName && stores[currentZoneName]) openShop(currentZoneName);
     }
     if (e.key === "Escape") closeAllModals();
+});
+
+// Tap zone prompt to open shop (mobile)
+zonePrompt.addEventListener("click", () => {
+    if (currentZoneName && stores[currentZoneName]) openShop(currentZoneName);
 });
 
 // ==========================================
@@ -579,7 +666,7 @@ document.addEventListener("keydown", (e) => {
 });
 document.addEventListener("keyup", (e) => { if (keys.hasOwnProperty(e.key)) keys[e.key] = false; });
 
-// Mouse drag to rotate camera
+// Mouse drag to rotate camera (desktop)
 let isDragging = false;
 container.addEventListener("mousedown", (e) => { if (e.button === 0) isDragging = true; });
 document.addEventListener("mouseup", () => { isDragging = false; });
@@ -588,6 +675,57 @@ document.addEventListener("mousemove", (e) => {
         cameraYaw -= e.movementX * 0.005;
     }
 });
+
+// ==========================================
+// TOUCH CAMERA ROTATION (mobile one-finger drag)
+// ==========================================
+let touchCamLastX = 0;
+container.addEventListener("touchstart", (e) => {
+    if (!anyModalOpen()) touchCamLastX = e.touches[0].clientX;
+}, { passive: true });
+container.addEventListener("touchmove", (e) => {
+    if (anyModalOpen() || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - touchCamLastX;
+    cameraYaw -= dx * 0.007;
+    touchCamLastX = e.touches[0].clientX;
+}, { passive: true });
+
+// ==========================================
+// VIRTUAL JOYSTICK EVENT HANDLERS (mobile)
+// ==========================================
+if (joystickZone) {
+    joystickZone.addEventListener("pointerdown", (e) => {
+        joystickActive = true;
+        const rect = joystickZone.getBoundingClientRect();
+        joystickOriginX = rect.left + rect.width / 2;
+        joystickOriginY = rect.top + rect.height / 2;
+        joystickZone.setPointerCapture(e.pointerId);
+        e.preventDefault();
+    });
+
+    joystickZone.addEventListener("pointermove", (e) => {
+        if (!joystickActive) return;
+        let dx = e.clientX - joystickOriginX;
+        let dy = e.clientY - joystickOriginY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > JOYSTICK_MAX_RADIUS) {
+            dx = (dx / dist) * JOYSTICK_MAX_RADIUS;
+            dy = (dy / dist) * JOYSTICK_MAX_RADIUS;
+        }
+        joystickThumb.style.transform = `translate(${dx}px, ${dy}px)`;
+        joystickDirX = dx / JOYSTICK_MAX_RADIUS;
+        joystickDirY = dy / JOYSTICK_MAX_RADIUS;
+    });
+
+    const resetJoystick = () => {
+        joystickActive = false;
+        joystickDirX = 0;
+        joystickDirY = 0;
+        joystickThumb.style.transform = "translate(0px, 0px)";
+    };
+    joystickZone.addEventListener("pointerup", resetJoystick);
+    joystickZone.addEventListener("pointercancel", resetJoystick);
+}
 
 // ==========================================
 // NAV LINE (3D dashed line)
@@ -645,7 +783,8 @@ function checkZones() {
     if (found) {
         currentZoneName = found.name;
         if (found.type === "store") {
-            zonePrompt.textContent = `🛍️ ${found.name} — Press ENTER to shop`;
+            const shopHint = ('ontouchstart' in window || navigator.maxTouchPoints > 0) ? 'Tap to shop' : 'Press ENTER to shop';
+            zonePrompt.textContent = `🛍️ ${found.name} — ${shopHint}`;
         } else {
             zonePrompt.textContent = `📍 ${found.name}`;
         }
@@ -684,6 +823,11 @@ function animate() {
     if (keys.s || keys.ArrowDown) forward -= 1;
     if (keys.a || keys.ArrowLeft) right += 1;
     if (keys.d || keys.ArrowRight) right -= 1;
+    // Mobile joystick — screen-up = camera-forward, screen-right = camera-right
+    if (joystickActive) {
+        forward -= joystickDirY;  // dy < 0 (up)    → positive forward
+        right -= joystickDirX;   // dx > 0 (right)  → negative right (matches ArrowRight)
+    }
 
     const isWalking = forward !== 0 || right !== 0;
 

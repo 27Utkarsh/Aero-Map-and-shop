@@ -489,3 +489,243 @@ input:focus {
   color: #888;
   margin-left: auto;
 }
+
+/* ==========================================
+   VIRTUAL JOYSTICK
+   ========================================== */
+#joystick-zone {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.10);
+  border: 2px solid rgba(59, 130, 246, 0.35);
+  display: none;
+  /* hidden on desktop */
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.12);
+}
+
+#joystick-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.55);
+  border: 2px solid rgba(100, 160, 255, 0.9);
+  pointer-events: none;
+  will-change: transform;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.45);
+}
+
+/* Zone prompt — tappable on mobile */
+.zone-prompt {
+  cursor: pointer;
+}
+
+/* ==========================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   ========================================== */
+@media (max-width: 768px) {
+
+  /* Show joystick */
+  #joystick-zone {
+    display: flex;
+  }
+
+  /* HUD — stack into two compact rows */
+  .hud {
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .hud-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    width: 100%;
+  }
+
+  .hud-info span {
+    margin-right: 0;
+    font-size: 0.75rem;
+  }
+
+  .hud-actions {
+    gap: 6px;
+    width: 100%;
+  }
+
+  .hud-actions .btn,
+  .hud-actions a.btn {
+    flex: 1;
+    padding: 8px 6px;
+    font-size: 0.75rem;
+    text-align: center;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Trip bar — hidden to save vertical space */
+  .trip-bar {
+    display: none;
+  }
+
+  /* Game container — full height minus compact HUD */
+  #game-container {
+    height: calc(100vh - 95px);
+    touch-action: none;
+  }
+
+  /* Zone prompt — above the joystick */
+  .zone-prompt {
+    bottom: 170px;
+    font-size: 0.85rem;
+    padding: 8px 18px;
+  }
+
+  /* Modals — slide up from bottom, full width */
+  .shop-modal,
+  .nav-modal,
+  .cart-modal,
+  .payment-modal {
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    transform: none;
+    border-radius: 18px 18px 0 0;
+    max-height: 78vh;
+    overflow-y: auto;
+    padding: 20px 16px;
+    box-sizing: border-box;
+  }
+
+  /* Bigger touch targets */
+  .add-to-cart,
+  .remove-btn,
+  .close-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .payment-option {
+    min-height: 56px;
+  }
+
+  .product-list {
+    max-height: 36vh;
+  }
+
+  .nav-list {
+    max-height: 44vh;
+  }
+
+  /* Landing / boarding / orders pages */
+  .container {
+    margin: 20px auto;
+    padding: 24px 20px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* ==========================================
+   MODAL BACKDROP
+   Dims the game canvas behind open modals.
+   ========================================== */
+#modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 9;
+  /* just below modals (z-index 10) */
+  pointer-events: none;
+  transition: background 0.25s ease;
+}
+
+/* ==========================================
+   HIDE OVERLAYS WHEN ANY MODAL IS OPEN
+   Uses CSS :has() — no JS required.
+   Joystick + zone prompt disappear when a
+   modal is active and reappear when it closes.
+   ========================================== */
+body:has(:is(.shop-modal, .nav-modal, .cart-modal, .payment-modal).active) #modal-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
+  /* lets tapping backdrop close the modal */
+}
+
+body:has(:is(.shop-modal, .nav-modal, .cart-modal, .payment-modal).active) #joystick-zone,
+body:has(:is(.shop-modal, .nav-modal, .cart-modal, .payment-modal).active) .zone-prompt {
+  display: none !important;
+}
+
+/* ==========================================
+   QUANTITY CONTROLS (shop modal)
+   ========================================== */
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qty-btn {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  /* override mobile 44px rule for these inline buttons */
+  min-width: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+  line-height: 1;
+  padding: 0;
+}
+
+.qty-btn:hover,
+.qty-btn:active {
+  background: var(--accent-color);
+  color: #0b1628;
+  transform: scale(1.08);
+}
+
+.qty-display {
+  font-weight: 700;
+  font-size: 1.05rem;
+  min-width: 24px;
+  text-align: center;
+  color: var(--accent-color);
+}
+
+/* Shop modal footer — total on left, checkout on right */
+.shop-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 15px;
+  padding-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}

@@ -3,7 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0b1628">
     <title>Terminal Map - Aero Map & Shop</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -43,10 +46,18 @@
     </div>
 
     <!-- 3D Game Canvas -->
-    <div id="game-container"></div>
+    <div id="game-container" style="touch-action: none;"></div>
 
     <!-- Zone prompt overlay -->
     <div id="zone-prompt" class="zone-prompt"></div>
+
+    <!-- Mobile virtual joystick -->
+    <div id="joystick-zone">
+        <div id="joystick-thumb"></div>
+    </div>
+
+    <!-- Backdrop — dims canvas when any modal is open -->
+    <div id="modal-backdrop"></div>
 
     <!-- Shop Modal Overlay -->
     <div id="shop-modal" class="shop-modal">
@@ -55,10 +66,11 @@
             <button id="close-shop-btn" class="close-btn">&times;</button>
         </div>
         <ul id="product-list" class="product-list"></ul>
-        <div
-            style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 15px; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+        <div class="shop-footer">
             <span style="color: var(--accent-color); font-weight: bold;">Cart Total: £<span
                     id="modal-cart-total">0.00</span></span>
+            <button id="shop-checkout-btn" class="btn"
+                style="padding: 8px 18px; font-size: 0.9rem; display: none;">Checkout &rarr;</button>
         </div>
     </div>
 
