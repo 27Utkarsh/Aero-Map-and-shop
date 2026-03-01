@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terminal Map - Aero Map & Shop</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 
 <body>
@@ -42,9 +42,11 @@
         <span>🛬 Arrives {{ ticket.scheduled_arrival_time_local }} at {{ ticket.to_airport_name }}</span>
     </div>
 
-    <div id="game-container">
-        <!-- Phaser injects canvas here -->
-    </div>
+    <!-- 3D Game Canvas -->
+    <div id="game-container"></div>
+
+    <!-- Zone prompt overlay -->
+    <div id="zone-prompt" class="zone-prompt"></div>
 
     <!-- Shop Modal Overlay -->
     <div id="shop-modal" class="shop-modal">
@@ -98,11 +100,52 @@
         </div>
     </div>
 
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="shop-modal payment-modal">
+        <div class="shop-header">
+            <h2 class="shop-title">💳 Select Payment</h2>
+            <button id="close-payment-btn" class="close-btn">&times;</button>
+        </div>
+        <div class="payment-summary">
+            <span>Order Total</span>
+            <span class="payment-total">£<span id="payment-total">0.00</span></span>
+        </div>
+        <div class="payment-methods">
+            <button class="payment-option" data-method="card">
+                <span class="payment-icon">💳</span>
+                <span class="payment-label">Credit / Debit Card</span>
+                <span class="payment-sub">Visa, Mastercard, Amex</span>
+            </button>
+            <button class="payment-option" data-method="google-pay">
+                <span class="payment-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+                        <path
+                            d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" />
+                    </svg>
+                </span>
+                <span class="payment-label">Google Pay</span>
+                <span class="payment-sub">Fast & secure</span>
+            </button>
+            <button class="payment-option" data-method="paypal">
+                <span class="payment-icon" style="color: #00457C; font-weight: 800;">P</span>
+                <span class="payment-label">PayPal</span>
+                <span class="payment-sub">Pay with your PayPal account</span>
+            </button>
+            <button class="payment-option" data-method="apple-pay">
+                <span class="payment-icon">🍎</span>
+                <span class="payment-label">Apple Pay</span>
+                <span class="payment-sub">Touch ID / Face ID</span>
+            </button>
+        </div>
+        <p style="text-align: center; font-size: 0.7rem; color: #666; margin-top: 12px;">
+            🔒 Payments are simulated for this demo
+        </p>
+    </div>
+
     <script>
         window.userFlight = "{{ ticket.flight_number }}";
         window.userSeat = "{{ ticket.seat }}";
         window.userGate = "{{ ticket.gate }}";
-        // Boarding countdown: start at 30 minutes (1800 seconds)
         window.boardingSecondsLeft = 1800;
     </script>
     <script src="{{ url_for('static', filename='game.js') }}"></script>

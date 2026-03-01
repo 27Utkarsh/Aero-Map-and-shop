@@ -136,6 +136,7 @@ def create_order():
         "flight": ticket.get("flight_number"),
         "seat": ticket.get("seat"),
         "gate": ticket.get("gate"),
+        "payment_method": data.get("payment_method", "card"),
         "cart_items": cart,
         "total": total
     }
